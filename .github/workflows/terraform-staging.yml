@@ -3,7 +3,7 @@ name: Terraform Deployment (staging)
 on:
   push:
     branches:
-      - staging
+      - main
 
 jobs:
   terraform:
