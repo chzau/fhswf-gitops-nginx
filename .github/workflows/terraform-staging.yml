@@ -1,23 +1,19 @@
-name: Terraform CI/CD
+name: Terraform Deployment (staging)
 
 on:
   push:
     branches:
-      - main
+      - staging
 
 jobs:
   terraform:
-    name: Terraform Plan & Apply
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Setup Terraform
+      - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.7
@@ -30,14 +26,13 @@ jobs:
           aws-region: eu-central-1
 
       - name: Terraform Init
-        working-directory: environments/dev
+        working-directory: environments/staging
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: environments/dev
-        run: terraform plan -out=tfplan
+        working-directory: environments/staging
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
 
-      - name: Terraform Apply (auto-approve)
-        if: github.ref == 'refs/heads/main'
-        working-directory: environments/dev
+      - name: Terraform Apply
+        working-directory: environments/staging
         run: terraform apply -auto-approve tfplan
